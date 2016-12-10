@@ -90,6 +90,7 @@ class book :
                 self.h = token.strip()
                 self.h = self.h.replace('<h1>', '')
                 self.h = self.h.replace('</h1>', '')
+                self.h = self.h.replace('/', ' or ')
                 continue
             if body :
                 if '<table' in token :

@@ -44,21 +44,21 @@ class BooksDownload :
                     self.getBook(token[:token.find('"')])
 
     def getBook(self, bookUrl) :
-        print "Downloading book with url [" + bookUrl + "]"
         url = _BASEURL + bookUrl
         b = book.book(url, self.workdir)
         idx = b.current()
         if b.downloaded() :
-            print 'Already downloaded'
             return
+        print
         if idx == 0 :
             idx = idx + 1
             r = self.getRequest(url)
             b.write(r.text)
             if b.isCorrupted() :
-                print 'Skipped'
+                sys.stdout.write('\r' + url + ' :  url not found')
+                sys.stdout.flush()
                 return
-            self.progress(50, idx)
+            self.progress(b.heading(), 50, idx)
             
         while (idx <= b.pages()) :
             idx = idx + 1
@@ -66,17 +66,19 @@ class BooksDownload :
             url = _BASEURL + url[:-5] + '_' + str(idx) + '.html'
             r = self.getRequest(url)
             b.write(r.text)
-            self.progress(b.pages(), idx)
-        print
+            self.progress(b.heading(), b.pages(), idx)
 
-    def progress(self, total, now) :
-        percent = (now * 50) / total
+    def progress(self, title, total, now) :
+        percent = (now * 40) / total
         done = percent*'|'
-        left = (50 - percent)*' '
-        sys.stdout.write('\rProgress:       [' + done + left + ']')
+        left = (40 - percent)*' '
+        if len(title) > 40 :
+            title = title[:36] + '... '
+        sys.stdout.write('\r%-40s: [%s%s]' % (title, done, left))
         sys.stdout.flush()
 
 if __name__ == '__main__' :
+    print "Books Downloader"
 
     # Get basedir
     script = sys.argv[0] 
