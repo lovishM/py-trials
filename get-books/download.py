@@ -61,12 +61,13 @@ class BooksDownload :
             self.progress(b.heading(), 50, idx)
             
         while (idx <= b.pages()) :
-            idx = idx + 1
+            nextIdx = idx + 1
             url = bookUrl
-            url = _BASEURL + url[:-5] + '_' + str(idx) + '.html'
+            url = _BASEURL + url[:-5] + '_' + str(nextIdx) + '.html'
             r = self.getRequest(url)
             b.write(r.text)
             self.progress(b.heading(), b.pages(), idx)
+            idx = nextIdx
 
     def progress(self, title, total, now) :
         percent = (now * 40) / total
