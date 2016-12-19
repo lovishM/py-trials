@@ -2,38 +2,29 @@
 # Defined dbm cache class
 # ------------------------
 
-import os, dbm
+# System imports
+import dbm
 
-class cache :
 
-    def __init__(self, workdir) :
+class Cache:
+    def __init__(self, workdir):
         self.cacheFile = workdir + '/.download'
-        self.readDB = None
+        self.readDB = dbm.open(self.cacheFile, 'c')
 
-    def __del__(self) :
-        if self.readDB != None :
+    def __del__(self):
+        if self.readDB is None:
             self.readDB.close()
 
-    def put(self, dic) :
-        try :
-            self.db = dbm.open(self.cacheFile, 'c')
-        except dbm.error :
-            self.readDB = None
-        for (key,value) in dic.iteritems() :
-            self.db[key] = value
-        self.db.close()
+    def put(self, dic):
+        for (key, value) in dic.iteritems():
+            self.readDB[key] = value
 
-    def get(self, name) :
-        if self.readDB == None :
-            try :
-                self.readDB = dbm.open(self.cacheFile, 'r')
-            except dbm.error :
-                self.readDB = None
-                return {}
+    def get(self, name):
+        if self.readDB is None:
+            return {}
         output = None
-        try :
+        try:
             output = self.readDB[name]
         except KeyError:
             pass
         return output
-
